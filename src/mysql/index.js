@@ -18,18 +18,23 @@ class Mysql {
       }
       return new Promise((resolve, reject) => {
         pool.getConnection((err,connection)=>{
+            let response = {}
             if (err) {
                 console.log('数据库连接失败',err);
-                reject(err)
+                resolve({ code:500,msg:'数据库连接失败',err,res:true})
             } else {
-                connection.query(sql,(err,res)=>{
-                    resolve(res)
+                connection.query(sql,(error,res)=>{
+                    if (error) {
+                      console.log(error)
+                      resolve({code:501,msg:'数据库操作失败',error})
+                      return
+                    }
+                    resolve({code:1,msg:'操作成功',data: res, res: true})
                     connection.release()
                 })
             }
         })
       })
-       
     }
 }
 module.exports = new Mysql()
