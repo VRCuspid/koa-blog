@@ -95,8 +95,21 @@ class CreateSql {
         return `INSERT INTO ${table}(${proparr.join(',')}) VALUES(${valuearr.join(',')})`
     }
 
-    search({table,limit,condition}) {
-        return `SELECT * FROM ${table} ${condition?'WHERE ' +condition:''} ${limit?'LIMIT '+limit.page+','+limit.size:''}`
+    select(table,limit,condition,keys) {
+        return `SELECT ${keys?keys:'*'} FROM ${table} ${condition?'WHERE ' +condition:''} ${limit.page&&limit.size?'LIMIT '+limit.page+','+limit.size:''}`
     }
+
+    delete(table,condition) {
+        return `DELETE FROM ${table} WHERE ${condition}`
+    }
+
+    update({table,condition,updatelist}) {
+        const set = updatelist.map(item=>{
+          return `${item.prop}=${item.value?'"'+item.value+'"':null}`
+        })
+
+        return `UPDATE ${table} SET ${set.join(',')} WHERE ${condition}`
+    }
+
 }
 module.exports = { formatDate,CreateSql:new CreateSql() }

@@ -3,9 +3,10 @@ var msg = require('../msg')
 const { v4: uuidv4 } = require('uuid')
 const { formatDate,CreateSql } = require('../uitls')
 class Article {
+    // 新增
     addAticle ({act_title,main_content,act_detail,tags,likes}) {
         return new Promise( async (resolve,reject)=>{
-            if (!act_title||!main_content) {
+            if (!act_title||!main_content||!act_detail) {
                 resolve(msg.error(400))
             } else {
                 const id = uuidv4()
@@ -19,41 +20,88 @@ class Article {
                         { prop:'main_content',value:main_content },
                         { prop:'likes',value:likes },
                         { prop:'tags',value:tags },
-                    ]
-                }
-                const actdetail = {
-                    table:'act_detail',
-                    list: [
-                        { prop:'id',value:id },
                         { prop:'act_detail',value:act_detail },
                     ]
                 }
                 const act_list_sql = CreateSql.insert(actlist)
-                const act_detail_sql = CreateSql.insert(actdetail)
                 let acticle_list = await mysql.query(act_list_sql)
-                let acticle_detail = await mysql.query(act_detail_sql)
-                if (acticle_list.res&&acticle_detail.res) {
-                    resolve(msg.success({},'新增成功'))
-                } else if(!acticle_list.res) {
+                if (acticle_list.res) {
+                    resolve(msg.success(null,'新增成功'))
+                } else {
                     console.log(acticle_list,'文章列表新增失败')
                     resolve(msg.error(acticle_list.code))
-                } else if (!acticle_detail.res) {
-                    console.log(acticle_detail,'新增文章详情失败')
-                    resolve(msg.error(acticle_detail.code))
-                }
+                } 
             }
         })
     }
 
-    searchList ({page,size,condition}) {
+    // 查询
+    searchList ({page,size,condition,isDetail}) {
         return new Promise( async (resolve,reject) => {
-            const act_list_sql = CreateSql.search('acticle_list',{ page,size },condition)
-            const act_list = await mysql.query('SELECT * FROM acticle_list')
+            const keys = 'id,act_title,main_content,create_time,tags,likes,update_time'
+            const act_list_sql = CreateSql.select('acticle_list',{ page,size },condition,isDetail?null:keys)
+            console.log(act_list_sql,'sql')
+            const act_list = await mysql.query(act_list_sql)
+            console.log(act_list)
+            if (isDetail) {
+                resolve(act_list.data.length?msg.success(act_list.data):{code:0,msg:'该文章不存在',res:false})
+                return
+            }
             resolve(
                 act_list.res ? 
                 msg.success(act_list.data) :
                 msg.error(act_list.code)
             )
+        })
+    }
+
+    // 删除
+    delArticle({id}) {
+        return new Promise( async (resolve,reject) => {
+            const del_sql = CreateSql.delete('acticle_list',`id="${id}"`)
+            const act_del = await mysql.query(del_sql)
+            resolve(
+                act_del.res ?
+                msg.success(null,'删除成功') :
+                msg.error(act_del.code)
+            )
+        })
+    }
+
+    // 修改
+    updateArticle({id,act_title,main_content,act_detail,tags,likes}) {
+        const update_time = formatDate(new Date(),'yyyy-MM-dd hh:mm:ss')
+        const updateObj = {
+            table:'acticle_list',
+            updatelist: [
+                { prop:'act_title',value:act_title },
+                { prop:'update_time',value:update_time },
+                { prop:'main_content',value:main_content },
+                { prop:'likes',value:likes },
+                { prop:'tags',value:tags },
+                { prop:'act_detail',value:act_detail },
+            ],
+            condition:'id="'+id+'"'
+        }
+        return new Promise( async (resolve,reject) => {
+            const update_sql = CreateSql.update(updateObj)
+            const act_upadte = await mysql.query(update_sql)
+            if (act_upadte.res) {
+                const act_detail = await this.searchList({condition:'id="'+id+'"',isDetail:true})
+                console.log(act_detail,'detail')
+                resolve(
+                    msg.success(act_detail.data[0],'更新成功')
+                )
+            } else {
+                resolve({code:0,res:false,msg:'修改失败'})
+            }
+            // resolve(
+            //     act_upadte.res ?
+            //     msg.success(null,'更新成功') :
+            //     msg.error(act_upadte.code)
+            // )
+            console.log(update_sql)
+            resolve({code:1})
         })
     }
 

@@ -9,9 +9,7 @@ module.exports = function(router) {
         ctx.body="首页";
     })
 
-    /**
-     * 新增
-     */
+   // 新增文章
     router.post('/api/acticle/add_acticle',async (ctx)=>{
         const {act_title,main_content,act_detail,tags,likes} = ctx.request.body
         const data = await acticle.addAticle({act_title,main_content,act_detail,tags,likes})
@@ -19,13 +17,32 @@ module.exports = function(router) {
         ctx.body = data
     })
 
-    router.get('/api/acticle/get_acticlelist',async (ctx)=>{
+    // 分页查询文章列表
+    router.get('/api/acticle/get_acticleList',async (ctx)=>{
         const {page,size} = ctx.query
         console.log(page,size,'page,size')
-        
-        ctx.body = {
-            code: 1,
-            data: null
-        }
+        const data  = await acticle.searchList({page,size})
+        console.log(data)
+        ctx.body = data
+    })
+
+    // 获取文章详情
+    router.get('/api/acticle/get_acticleDetail', async ctx=>{
+        const {id} = ctx.query
+        let data = await acticle.searchList({condition:'id="'+id+'"',isDetail:true})
+        data.data = data.code ? data.data[0] : data.data
+        ctx.body = data
+    })
+
+    router.delete('/api/acticle/del_acticle', async ctx=>{
+        const {id} = ctx.query
+        const data = await acticle.delArticle({id})
+        ctx.body = data
+    })
+
+    router.post('/api/acticle/update_acticle',async ctx=>{
+        const {act_title,main_content,act_detail,tags,likes,id} = ctx.request.body
+        const data = await acticle.updateArticle({act_title,main_content,act_detail,tags,likes,id})
+        ctx.body = data
     })
 }
