@@ -39,10 +39,8 @@ class Article {
     searchList ({page,size,condition,isDetail}) {
         return new Promise( async (resolve,reject) => {
             const keys = 'id,act_title,main_content,create_time,tags,likes,update_time'
-            const act_list_sql = CreateSql.select('acticle_list',{ page,size },condition,isDetail?null:keys)
-            console.log(act_list_sql,'sql')
+            const act_list_sql = CreateSql.select({table:'acticle_list',limit:{ page,size },condition,keys:isDetail?null:keys})
             const act_list = await mysql.query(act_list_sql)
-            console.log(act_list)
             if (isDetail) {
                 resolve(act_list.data.length?msg.success(act_list.data):{code:0,msg:'该文章不存在',res:false})
                 return
@@ -58,7 +56,7 @@ class Article {
     // 删除
     delArticle({id}) {
         return new Promise( async (resolve,reject) => {
-            const del_sql = CreateSql.delete('acticle_list',`id="${id}"`)
+            const del_sql = CreateSql.delete({table:'acticle_list',condition:`id="${id}"`})
             const act_del = await mysql.query(del_sql)
             resolve(
                 act_del.res ?
@@ -95,11 +93,6 @@ class Article {
             } else {
                 resolve({code:0,res:false,msg:'修改失败'})
             }
-            // resolve(
-            //     act_upadte.res ?
-            //     msg.success(null,'更新成功') :
-            //     msg.error(act_upadte.code)
-            // )
             console.log(update_sql)
             resolve({code:1})
         })

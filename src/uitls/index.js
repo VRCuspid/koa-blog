@@ -95,11 +95,11 @@ class CreateSql {
         return `INSERT INTO ${table}(${proparr.join(',')}) VALUES(${valuearr.join(',')})`
     }
 
-    select(table,limit,condition,keys) {
-        return `SELECT ${keys?keys:'*'} FROM ${table} ${condition?'WHERE ' +condition:''} ${limit.page&&limit.size?'LIMIT '+limit.page+','+limit.size:''}`
+    select({table,limit,condition,keys}) {
+        return `SELECT ${keys?keys:'*'} FROM ${table} ${condition?'WHERE ' +condition:''} ${limit&&limit.page&&limit.size?'LIMIT '+limit.page+','+limit.size:''}`
     }
 
-    delete(table,condition) {
+    delete({table,condition}) {
         return `DELETE FROM ${table} WHERE ${condition}`
     }
 
