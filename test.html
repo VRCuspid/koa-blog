@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script src="http://imgcache.qq.com/open/qcloud/video/vcplayer/TcPlayer-2.3.2.js" charset="utf-8"></script>;
+    <div id="id_test_video" style="width:100%; height:auto;"></div>
+    <script>
+        var player =  new TcPlayer('id_test_video', {
+            "rtmp": "rtmp://zb.kunweigui.com/live/1400364324_171f754dcdd?txSecret=f4a557486bcd0f04052cb49c58bd5346&txTime=5EB76B53",
+            "autoplay" : true,      //iOS 下 safari 浏览器，以及大部分移动端浏览器是不开放视频自动播放这个能力的
+            "poster" : "http://www.test.com/myimage.jpg",
+            "live":true,
+            "volume":0.4,
+            "width" :  '480', // 视频的显示宽度，请尽量使用视频分辨率宽度
+            "height" : '320', // 视频的显示高度，请尽量使用视频分辨率高度
+            "listener":function(msg) {
+                console.log(msg)
+            }
+        });
+    </script>
+</body>
+</html>

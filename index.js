@@ -3,37 +3,42 @@ var Koa = require('koa')
 var PORT = 3001
 var app=new Koa();
 var bodyParser = require('koa-bodyparser');
-var auth = require('./src/Auth/auth')
-var msg = require('./src/msg')
-
-router.get('/',async (ctx)=>{
-    ctx.body="首页";
-    console.log(ctx.request.headers)
-})
+// var auth = require('./src/Auth/auth')
+// var msg = require('./src/msg')
+// var fs = require('fs')
+// router.get('/',async (ctx)=>{
+//     const ejs = fs.readFileSync('./test.html')
+//     console.log(ejs.toString())
+//     ctx.body=ejs.toString();
+// })
 
 app.use(bodyParser())   /* 获取POST方式参数 */
 
-app.use(async (ctx,next)=> {
-    const { authorization } = ctx.request.headers
-    try {
-        const keyArr = auth.deToken(authorization).split('&')
-        if (keyArr[0]&&keyArr[1]) {
-            const [user_name,user_pwd] = keyArr
-            const login_res = await auth.login({user_name,user_pwd})
-            if (login_res.res) {
-                await next()
-            } else {
-                throw '4004'
-            }
-        } else {
-            throw '4004'
-        }
-    } catch(err) {
-        console.log(err)
-        ctx.body = msg.error(4004)
-    }
+// app.use(async (ctx,next)=> {
+//     const white = [
+//         '/api/auth/login',
+//         '/'
+//     ]
+//     if (white.indexOf(ctx.url)!==-1) {
+//         await next()
+//         return
+//     }
+//     const { authorization } = ctx.request.headers
+//     try {
+//         const keyArr = auth.deToken(authorization).split('&')
+//         const [user_name,user_pwd] = keyArr
+//         const login_res = await auth.login({user_name,user_pwd})
+//         if (login_res.res) {
+//             await next()
+//         }else {
+//             throw '4004'
+//         }
+//     } catch(err) {
+//         console.log(err)
+//         ctx.body = msg.error(4004)
+//     }
     
-})
+// })
 
 app.use(router.routes());   /*启动路由*/
 

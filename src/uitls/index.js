@@ -99,6 +99,9 @@ class CreateSql {
         return `SELECT ${keys?keys:'*'} FROM ${table} ${condition?'WHERE ' +condition:''} ${limit&&limit.page&&limit.size?'LIMIT '+limit.page+','+limit.size:''}`
     }
 
+    getTotal({table}) {
+      return `SELECT COUNT(*) FROM ${table}`
+    }
     delete({table,condition}) {
         return `DELETE FROM ${table} WHERE ${condition}`
     }
