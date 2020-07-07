@@ -23,5 +23,8 @@
     "koa-router": "^8.0.8",
     "mysql": "^2.18.1",
     "uuid": "^8.0.0"
+  },
+  "dependencies": {
+    "koa-static": "^5.0.0"
   }
 }

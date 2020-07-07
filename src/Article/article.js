@@ -25,7 +25,6 @@ class Article {
                 }
                 const act_list_sql = CreateSql.insert(actlist)
                 let acticle_list = await mysql.query(act_list_sql)
-                console.log(acticle_list,'act_detail')
                 if (acticle_list.res) {
                     resolve(msg.success(null,'新增成功'))
                 } else {
@@ -39,16 +38,18 @@ class Article {
     // 查询
     searchList ({page,size,condition,isDetail}) {
         return new Promise( async (resolve,reject) => {
-            const keys = 'id,act_title,main_content,create_time,tags,likes,update_time'
-            const act_list_sql = CreateSql.select({table:'acticle_list',limit:{ page,size },condition,keys:isDetail?null:keys})
+            const total_sql = CreateSql.getTotal({table:'acticle_list'})
+            const act_list_total = await mysql.query(total_sql)
+            const total = act_list_total.res ? act_list_total.data[0]['COUNT(*)'] : 0
+
+            const keys = 'id,act_title,main_content,DATE_FORMAT(create_time,"%Y-%m-%d %T") as create_time,DATE_FORMAT(update_time,"%m-%d-%Y %T") as update_time,tags,likes'
+            const act_list_sql = CreateSql.select({table:'acticle_list',limit:{ start:page*size,end:page*size+size },condition,keys:isDetail?null:keys})
             const act_list = await mysql.query(act_list_sql)
             if (isDetail) {
                 resolve(act_list.data.length?msg.success(act_list.data):{code:0,msg:'该文章不存在',res:false})
                 return
             }
-            const total_sql = CreateSql.getTotal({table:'acticle_list'})
-            const act_list_total = await mysql.query(total_sql)
-            const total = act_list_total.res ? act_list_total.data[0]['COUNT(*)'] : 0
+            
             resolve(
                 act_list.res ? 
                 msg.success({rows:act_list.data,total}) :

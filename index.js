@@ -3,15 +3,16 @@ var Koa = require('koa')
 var PORT = 3001
 var app=new Koa();
 var bodyParser = require('koa-bodyparser');
-// var auth = require('./src/Auth/auth')
-// var msg = require('./src/msg')
-// var fs = require('fs')
-// router.get('/',async (ctx)=>{
-//     const ejs = fs.readFileSync('./test.html')
-//     console.log(ejs.toString())
-//     ctx.body=ejs.toString();
-// })
+var auth = require('./src/Auth/auth')
+var msg = require('./src/msg')
+var fs = require('fs')
+var path = require('path')
 
+const static_ = require('koa-static')
+
+app.use(static_(
+    path.join(path.join('./'), './dist')
+))
 app.use(bodyParser())   /* 获取POST方式参数 */
 
 // app.use(async (ctx,next)=> {

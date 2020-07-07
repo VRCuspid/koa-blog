@@ -96,7 +96,7 @@ class CreateSql {
     }
 
     select({table,limit,condition,keys}) {
-        return `SELECT ${keys?keys:'*'} FROM ${table} ${condition?'WHERE ' +condition:''} ${limit&&limit.page&&limit.size?'LIMIT '+limit.page+','+limit.size:''}`
+        return `SELECT ${keys?keys:'*'} FROM ${table} ${condition?'WHERE ' +condition:''} ${limit&&limit.start&&limit.end?'LIMIT '+limit.start+','+limit.end:''}`
     }
 
     getTotal({table}) {

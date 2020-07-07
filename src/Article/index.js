@@ -20,9 +20,7 @@ module.exports = function(router) {
     // 分页查询文章列表
     router.get('/api/acticle/get_acticleList',async (ctx)=>{
         const { page,size } = ctx.query
-        console.log(page,size,'page,size')
         const data  = await acticle.searchList({page,size})
-        console.log(data)
         ctx.body = data
     })
 
@@ -33,13 +31,14 @@ module.exports = function(router) {
         data.data = data.code ? data.data[0] : data.data
         ctx.body = data
     })
-
+    // 删除
     router.delete('/api/acticle/del_acticle', async ctx=>{
         const { id } = ctx.query
         const data = await acticle.delArticle({id})
         ctx.body = data
     })
 
+    // 修改
     router.post('/api/acticle/update_acticle',async ctx=>{
         const { act_title,main_content,act_detail,tags,likes,id } = ctx.request.body
         const data = await acticle.updateArticle({act_title,main_content,act_detail,tags,likes,id})
