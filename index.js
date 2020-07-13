@@ -53,6 +53,7 @@ app.use(router.allowedMethods());
 
 require('./src/Article')(router)
 require('./src/Auth')(router)
+require('./src/Tag')(router)
 
 app.listen(PORT,()=>{
     console.log('服务器启动成功，端口号：'+PORT,)

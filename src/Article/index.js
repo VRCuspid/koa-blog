@@ -13,7 +13,6 @@ module.exports = function(router) {
     router.post('/api/acticle/add_acticle',async (ctx)=>{
         const {act_title,main_content,act_detail,tags,likes} = ctx.request.body
         const data = await acticle.addAticle({act_title,main_content,act_detail,tags,likes})
-        console.log(data,'data')
         ctx.body = data
     })
 
@@ -28,7 +27,6 @@ module.exports = function(router) {
     router.get('/api/acticle/get_acticleDetail', async ctx=>{
         const { id } = ctx.query
         let data = await acticle.searchList({condition:'id="'+id+'"',isDetail:true})
-        data.data = data.code ? data.data[0] : data.data
         ctx.body = data
     })
     // 删除

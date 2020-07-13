@@ -2,6 +2,7 @@ var mysql = require('../mysql')
 var msg = require('../msg')
 const { v4: uuidv4 } = require('uuid')
 const { formatDate,CreateSql } = require('../uitls')
+var urlencode = require('urlencode');
 class Article {
     // 新增
     addAticle ({act_title,main_content,act_detail,tags,likes}) {
@@ -20,7 +21,7 @@ class Article {
                         { prop:'main_content',value:main_content },
                         { prop:'likes',value:likes },
                         { prop:'tags',value:tags },
-                        { prop:'act_detail',value:act_detail},
+                        { prop:'act_detail',value:urlencode(act_detail, 'gbk')},
                     ]
                 }
                 const act_list_sql = CreateSql.insert(actlist)
@@ -46,8 +47,15 @@ class Article {
             const act_list_sql = CreateSql.select({table:'acticle_list',limit:{ start:page*size,end:page*size+size },condition,keys:isDetail?null:keys})
             const act_list = await mysql.query(act_list_sql)
             if (isDetail) {
-                resolve(act_list.data.length?msg.success(act_list.data):{code:0,msg:'该文章不存在',res:false})
+                if(act_list.data.length) {
+                    var response = act_list.data[0]
+                    response.act_detail = urlencode.decode(response.act_detail, 'gbk')
+                    resolve(msg.success(response))
+                }else {
+                    resolve({code:0,msg:'该文章不存在',res:false})
+                }
                 return
+                // resolve(act_list.data.length?msg.success(act_list.data):{code:0,msg:'该文章不存在',res:false})
             }
             
             resolve(
@@ -63,6 +71,7 @@ class Article {
         return new Promise( async (resolve,reject) => {
             const del_sql = CreateSql.delete({table:'acticle_list',condition:`id="${id}"`})
             const act_del = await mysql.query(del_sql)
+            console.log(del_sql)
             resolve(
                 act_del.res ?
                 msg.success(null,'删除成功') :
@@ -82,7 +91,7 @@ class Article {
                 { prop:'main_content',value:main_content },
                 { prop:'likes',value:likes },
                 { prop:'tags',value:tags },
-                { prop:'act_detail',value:act_detail },
+                { prop:'act_detail',value:urlencode(act_detail, 'gbk') },
             ],
             condition:'id="'+id+'"'
         }
@@ -91,14 +100,12 @@ class Article {
             const act_upadte = await mysql.query(update_sql)
             if (act_upadte.res) {
                 const act_detail = await this.searchList({condition:'id="'+id+'"',isDetail:true})
-                console.log(act_detail,'detail')
                 resolve(
                     msg.success(act_detail.data[0],'更新成功')
                 )
             } else {
                 resolve({code:0,res:false,msg:'修改失败'})
             }
-            console.log(update_sql)
             resolve({code:1})
         })
     }
