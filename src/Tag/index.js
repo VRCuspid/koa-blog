@@ -11,7 +11,7 @@ module.exports = function(router) {
     })
 
     // 删除标签
-    router.post('/api/tag/del_tag',async ctx=>{
+    router.delete('/api/tag/del_tag',async ctx=>{
         const { tag_id } = ctx.request.body
         const data = await tag.delTag({tag_id})
         ctx.body = data
