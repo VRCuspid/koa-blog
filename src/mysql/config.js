@@ -6,7 +6,7 @@ const config = {
     database: {
       DATABASE: 'blog',
       USERNAME: 'root',
-      PASSWORD: 'root',
+      PASSWORD: 'cuspid123.@',
       PORT: '3306',
       HOST: 'localhost'
     }

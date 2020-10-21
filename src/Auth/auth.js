@@ -64,6 +64,10 @@ class Auth {
         return decrypted
     }
 
+    code() {
+        
+    }
+
 
 }
 

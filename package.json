@@ -26,6 +26,8 @@
     "uuid": "^8.0.0"
   },
   "dependencies": {
-    "koa-static": "^5.0.0"
+    "koa-static": "^5.0.0",
+    "node-dev": "^6.2.0",
+    "svg-captcha": "^1.4.0"
   }
 }
