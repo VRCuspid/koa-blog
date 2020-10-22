@@ -7,4 +7,9 @@ module.exports = function(router) {
         ctx.body = data;
     })
 
+    router.get('/api/auth/code',async (ctx)=>{
+        var code = auth.code()
+        ctx.body = code
+    })
+
 }

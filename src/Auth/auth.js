@@ -3,8 +3,10 @@ var msg = require('../msg')
 const { v4: uuidv4 } = require('uuid')
 const { formatDate,CreateSql } = require('../uitls')
 const crypto = require('crypto');
-
+const svgCaptcha = require('svg-captcha')
 const { secret } = require('../secret');
+const encryption = require('../uitls/encryption');
+const { deprecate } = require('util');
 
 class Auth {
     login({user_name,user_pwd}) {
@@ -65,7 +67,22 @@ class Auth {
     }
 
     code() {
-        
+        let cap = svgCaptcha.create({
+            size:6,
+            ignoreChars:'0o1i',
+            noise:2,
+        });
+        var decrypted = encryption.encrypt(cap.text)
+        var data = {
+            svg: cap.data,
+            code: decrypted[0],
+            iv: decrypted[1],
+            authTag: decrypted[2]
+        }
+
+        return msg.success(data)
+        // console.log(encryption.decrpt(...decrypted))
+
     }
 
 
