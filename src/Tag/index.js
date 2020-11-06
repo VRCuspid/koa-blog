@@ -24,6 +24,11 @@ module.exports = function(router) {
         ctx.body = data
     })
 
+    router.get('/api/tag/get_allTag',async ctx => {
+        const data = await tag.selectTag({isAll:true})
+        ctx.body = data
+    })
+
     // 标签详情
     router.get('/api/tag/get_tagDetail',async ctx => {
         const { tag_id } = ctx.query

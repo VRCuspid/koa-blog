@@ -47,14 +47,14 @@ class Tag {
             }
         })
     }
-    selectTag({page,size,condition,isDetail}) {
+    selectTag({page,size,condition,isDetail,isAll}) {
         return new Promise(async resolve=>{
             const total_sql = CreateSql.getTotal({table:'tag'})
             const query_response = await mysql.query(total_sql)
             const total = query_response.res ? query_response.data[0]['COUNT(*)'] : 0
-
+            const limit = isAll ? null : { start:page*size,end:page*size+size }
             const keys = 'tag_id,tag_name,tag_color,create_time,update_time'
-            const taglist_sql = CreateSql.select({limit:{start:page*size,end:page*size+size},table:'tag',condition,keys})
+            const taglist_sql = CreateSql.select({limit,table:'tag',condition,keys})
             const taglist = await mysql.query(taglist_sql)
 
             if (isDetail) {
@@ -67,7 +67,6 @@ class Tag {
                 }
                 return
             }
-
             resolve(
                 taglist.res ? 
                 msg.success({rows:taglist.data,total}) :
