@@ -3,6 +3,7 @@ var msg = require('../msg')
 const { v4: uuidv4 } = require('uuid')
 const { formatDate,CreateSql } = require('../uitls')
 var urlencode = require('urlencode');
+const Tag = require('../Tag/tag')
 class Article {
     // 新增
     addAticle ({act_title,main_content,act_detail,tags,likes}) {
@@ -42,22 +43,19 @@ class Article {
             const total_sql = CreateSql.getTotal({table:'acticle_list'})
             const act_list_total = await mysql.query(total_sql)
             const total = act_list_total.res ? act_list_total.data[0]['COUNT(*)'] : 0
-
-            const keys = 'id,act_title,main_content,DATE_FORMAT(create_time,"%Y-%m-%d %T") as create_time,DATE_FORMAT(update_time,"%m-%d-%Y %T") as update_time,tags,likes'
+            const keys = 'id,act_title,main_content,DATE_FORMAT(create_time,"%Y-%m-%d %T") as create_time,DATE_FORMAT(update_time,"%Y-%m-%d %T") as update_time,tags,likes'
             const act_list_sql = CreateSql.select({table:'acticle_list',limit:{ start:page*size,end:page*size+size },condition,keys:isDetail?null:keys})
-            const act_list = await mysql.query(act_list_sql)
+            let act_list = await mysql.query(act_list_sql)
             if (isDetail) {
                 if(act_list.data.length) {
                     var response = act_list.data[0]
                     response.act_detail = urlencode.decode(response.act_detail, 'gbk')
                     resolve(msg.success(response))
-                }else {
+                } else {
                     resolve({code:0,msg:'该文章不存在',res:false})
                 }
                 return
-                // resolve(act_list.data.length?msg.success(act_list.data):{code:0,msg:'该文章不存在',res:false})
             }
-            
             resolve(
                 act_list.res ? 
                 msg.success({rows:act_list.data,total}) :
