@@ -18,8 +18,9 @@ module.exports = function(router) {
 
     // 分页查询文章列表
     router.get('/api/acticle/get_acticleList',async (ctx)=>{
-        const { page,size } = ctx.query
-        const data  = await acticle.searchList({page,size})
+        const { page,size,act_title } = ctx.query
+        const condition = act_title ? `act_title like "%${act_title}%"` : null
+        const data  = await acticle.searchList({page,size,condition})
         ctx.body = data
     })
 
