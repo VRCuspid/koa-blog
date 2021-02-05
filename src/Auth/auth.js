@@ -69,17 +69,13 @@ class Auth {
     code() {
         let cap = svgCaptcha.create({
             size:6,
-            ignoreChars:'0o1i',
+            ignoreChars:'0o1il',
             noise:2,
         });
-        var decrypted = encryption.encrypt(cap.text)
         var data = {
             svg: cap.data,
-            code: decrypted[0],
-            iv: decrypted[1],
-            authTag: decrypted[2]
+            code: cap.text,
         }
-
         return msg.success(data)
         // console.log(encryption.decrpt(...decrypted))
 
